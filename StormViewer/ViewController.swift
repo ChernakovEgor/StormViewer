@@ -7,13 +7,51 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class ViewController: UITableViewController {
+    
+    private var pictures = [String]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        
+        title = "Storm Viewer"
+        navigationController?.navigationBar.prefersLargeTitles = true
+        
+        let fm = FileManager()
+        let path = Bundle.main.resourcePath!
+        let items = try! fm.contentsOfDirectory(atPath: path)
+        print(items)
+        
+        var pics = [String]()
+        for item in items {
+            if item.hasPrefix("nssl") {
+                pics.append(item)
+            }
+        }
+        pictures = pics.sorted()
     }
+}
 
 
+//MARK: TableView
+extension ViewController {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return pictures.count
+    }
+    
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Picture", for: indexPath)
+        cell.textLabel?.text = pictures[indexPath.row]
+        return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if let vc = storyboard?.instantiateViewController(withIdentifier: "Detail") as? DetailsViewController {
+            vc.selectedImage = pictures[indexPath.row]
+            vc.number = indexPath.row + 1
+            vc.total = pictures.count
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
 }
 
