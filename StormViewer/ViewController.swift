@@ -16,6 +16,7 @@ class ViewController: UITableViewController {
         
         title = "Storm Viewer"
         navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .reply, target: self, action: #selector(shareButtonTapped))
         
         let fm = FileManager()
         let path = Bundle.main.resourcePath!
@@ -29,6 +30,18 @@ class ViewController: UITableViewController {
             }
         }
         pictures = pics.sorted()
+    }
+    
+    @objc func shareButtonTapped() {
+        guard let picture = pictures.first, let jpgImage = UIImage(named: picture)?.jpegData(compressionQuality: 0.5) else {
+            return
+        }
+        
+        let message = "Hey! Check out this app:"
+        let link = "https://wowSuchGreatApp.com"
+        let vc = UIActivityViewController(activityItems: [message, link, jpgImage], applicationActivities: [])
+        vc.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
+        present(vc, animated: true)
     }
 }
 
